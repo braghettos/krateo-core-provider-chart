@@ -23,7 +23,11 @@
         "pullPolicy": {
           "type": "string",
           "title": "Image pull policy",
-          "enum": ["IfNotPresent", "Always", "Never"],
+          "enum": [
+            "IfNotPresent",
+            "Always",
+            "Never"
+          ],
           "default": "IfNotPresent"
         },
         "tag": {
@@ -107,7 +111,11 @@
         "type": {
           "type": "string",
           "title": "Service type",
-          "enum": ["ClusterIP", "NodePort", "LoadBalancer"],
+          "enum": [
+            "ClusterIP",
+            "NodePort",
+            "LoadBalancer"
+          ],
           "default": "ClusterIP"
         },
         "port": {
@@ -289,7 +297,11 @@
             "pullPolicy": {
               "type": "string",
               "title": "Image pull policy",
-              "enum": ["IfNotPresent", "Always", "Never"],
+              "enum": [
+                "IfNotPresent",
+                "Always",
+                "Never"
+              ],
               "default": "IfNotPresent"
             },
             "tag": {
@@ -388,7 +400,11 @@
             "type": {
               "type": "string",
               "title": "Service type",
-              "enum": ["ClusterIP", "NodePort", "LoadBalancer"],
+              "enum": [
+                "ClusterIP",
+                "NodePort",
+                "LoadBalancer"
+              ],
               "default": "ClusterIP"
             },
             "port": {
@@ -435,7 +451,11 @@
             "pullPolicy": {
               "type": "string",
               "title": "Image pull policy",
-              "enum": ["IfNotPresent", "Always", "Never"],
+              "enum": [
+                "IfNotPresent",
+                "Always",
+                "Never"
+              ],
               "default": "IfNotPresent"
             },
             "tag": {
@@ -625,11 +645,6 @@
           }
         }
       }
-    },
-    "core-provider-crd": {
-      "type": "object",
-      "title": "CRD subchart values",
-      "default": {}
     }
   }
 }
