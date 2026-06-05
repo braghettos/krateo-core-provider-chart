@@ -645,6 +645,11 @@
           }
         }
       }
+    },
+    "global": {
+      "type": "object",
+      "title": "Global values",
+      "description": "Helm global values (injected when this chart is used as a subchart)."
     }
   }
 }
