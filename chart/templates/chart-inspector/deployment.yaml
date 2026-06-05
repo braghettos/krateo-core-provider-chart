@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart-inspector.fullname" . }}
+  labels:
+    {{- include "chart-inspector.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.chartInspector.autoscaling.enabled }}
+  replicas: {{ .Values.chartInspector.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "chart-inspector.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.chartInspector.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "chart-inspector.labels" . | nindent 8 }}
+        {{- with .Values.chartInspector.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.chartInspector.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "chart-inspector.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.chartInspector.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ include "chart-inspector.fullname" . }}
+          image: "{{ .Values.chartInspector.image.repository }}:{{ .Values.chartInspector.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.chartInspector.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "chart-inspector.fullname" . }}
+          securityContext:
+            {{- toYaml .Values.chartInspector.securityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.chartInspector.service.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.chartInspector.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.chartInspector.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.chartInspector.resources | nindent 12 }}
+
+          volumeMounts:
+            {{- with .Values.chartInspector.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+          {{- with .Values.chartInspector.volumes }}
+          {{- toYaml . | nindent 8 }}
+          {{- end }}
+      {{- with .Values.chartInspector.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.chartInspector.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.chartInspector.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

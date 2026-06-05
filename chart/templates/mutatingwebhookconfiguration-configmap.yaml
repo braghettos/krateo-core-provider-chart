@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "core-provider.fullname" . }}-mutating-webhook-configuration
+data:
+  mutating-webhook.yaml: |
+{{ tpl (.Files.Get "assets/mutatingWebhookConfiguration.yaml") . | indent 4 }}

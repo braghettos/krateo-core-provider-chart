@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "core-provider.fullname" . }}
+  labels:
+    {{- include "core-provider.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "core-provider.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "core-provider.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "core-provider.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ include "core-provider.fullname" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "core-provider.fullname" . }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+            - containerPort: 9443
+              name: webhook-server
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          volumeMounts:
+            - mountPath: /tmp/assets/cdc-deployment
+              name: cdc-deployment
+              readOnly: true
+            - mountPath: /tmp/assets/cdc-configmap
+              name: cdc-configmap
+              readOnly: true
+            - mountPath: /tmp/assets/cdc-rbac
+              name: cdc-rbac
+              readOnly: true
+            - mountPath: /tmp/assets/mutating-webhook-configuration
+              name: mutating-webhook-configuration
+              readOnly: true
+            - mountPath: /tmp/assets/json-schema-configmap
+              name: jsonschema-configmap
+              readOnly: true
+            {{- if .Values.cdc.metrics.enabled }}
+            - mountPath: /tmp/assets/cdc-service
+              name: cdc-service
+              readOnly: true
+            {{- end }}
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: cdc-deployment
+          configMap:
+            name: {{ include "core-provider.fullname" . }}-cdc-deployment
+        - name: cdc-configmap
+          configMap:
+            name: {{ include "core-provider.fullname" . }}-cdc-configmap
+        - name: cdc-rbac
+          configMap:
+            name: {{ include "core-provider.fullname" . }}-rbac-configmap
+        - name: mutating-webhook-configuration
+          configMap:
+            name: {{ include "core-provider.fullname" . }}-mutating-webhook-configuration
+        - name: jsonschema-configmap
+          configMap:
+            name: {{ include "core-provider.fullname" . }}-jsonschema-configmap
+        {{- if .Values.cdc.metrics.enabled }}
+        - name: cdc-service
+          configMap:
+            name: {{ include "core-provider.fullname" . }}-service-configmap
+        {{- end }}
+          {{- with .Values.volumes }}
+          {{- toYaml . | nindent 8 }}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
