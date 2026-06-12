@@ -60,3 +60,10 @@ jobs:
 
       - name: Push chart
         run: helm push dist/*.tgz "${OCI_REPO}"
+
+      - name: Package & push the federated agent chart (if present)
+        run: |
+          if [ -f kagent/chart/Chart.yaml ]; then
+            helm package kagent/chart -d dist-agent/
+            helm push dist-agent/*.tgz "${OCI_REPO}"
+          fi
