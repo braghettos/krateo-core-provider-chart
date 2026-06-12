@@ -106,7 +106,7 @@ chartInspector:
   image:
     repository: ghcr.io/krateoplatformops/chart-inspector
     pullPolicy: IfNotPresent
-    tag: 0.2.0
+    tag: 1.0.2
   
   replicaCount: 1
   imagePullSecrets: []
@@ -139,7 +139,7 @@ cdc:
   image:
     repository: ghcr.io/krateoplatformops/composition-dynamic-controller
     pullPolicy: IfNotPresent
-    tag: 0.20.2
+    tag: 1.0.2
   replicaCount: 1
   imagePullSecrets: []
   nameOverride: ""
@@ -217,3 +217,4 @@ cdc:
   env:
     HOME: /tmp # home should be set to /tmp or any other writable directory to avoid permission issues with helm https://github.com/helm/helm/issues/8038
     COMPOSITION_CONTROLLER_DEBUG: "false"
+    COMPOSITION_CONTROLLER_WORKERS: "10"

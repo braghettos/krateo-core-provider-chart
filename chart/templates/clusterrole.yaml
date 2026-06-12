@@ -117,3 +117,6 @@ rules:
   - services
   verbs:
   - "*"
+- apiGroups: ["events.k8s.io"]
+  resources: ["events"]
+  verbs: ["create", "patch", "update"]
