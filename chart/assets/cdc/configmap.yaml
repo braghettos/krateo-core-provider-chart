@@ -8,13 +8,14 @@ metadata:
     app.kubernetes.io/instance: {{ "{{" }} trunc 63 .resource {{ "}}" }}
     app.kubernetes.io/version: {{ "{{" }} trunc 63 .apiVersion {{ "}}" }}
     app.kubernetes.io/component: controller
-    app.kubernetes.io/part-of: krateoplatformops
+    app.kubernetes.io/part-of: krateo
     app.kubernetes.io/managed-by: krateo
 data:
   COMPOSITION_CONTROLLER_SA_NAME: {{ "{{" }} .composition_controller_sa_name {{ "}}" }}
   COMPOSITION_CONTROLLER_SA_NAMESPACE: {{ "{{" }} .composition_controller_sa_namespace {{ "}}" }}
   URL_CHART_INSPECTOR: http://{{ include "chart-inspector.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8081/
   KRATEO_NAMESPACE: {{ .Release.Namespace }}
+  DEPLOYMENT_NAME: {{ "{{" }} .resource {{ "}}" }}-{{ "{{" }} .apiVersion {{ "}}" }}-controller
   {{- if .Values.cdc.metrics.enabled }}
   COMPOSITION_CONTROLLER_METRICS_SERVER_PORT: "{{ .Values.cdc.metrics.port | default 0 }}" # Set to 0 to disable metrics server
   {{- end }}
