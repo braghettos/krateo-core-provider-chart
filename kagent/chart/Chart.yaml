@@ -1,0 +1,20 @@
+apiVersion: v2
+name: krateo-core-provider-agent
+description: >-
+  The Krateo blueprints/composition-engine expert: manages CompositionDefinitions, compositions and the marketplace. Knows braghettos/core-provider + braghettos/krateo-core-provider-chart.
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+home: https://krateo.io
+icon: https://github.com/krateoplatformops/krateo/blob/main/docs/media/logo.svg
+keywords:
+  - krateo
+  - platformops
+  - kagent
+  - ai-agent
+  - core-provider
+  - blueprint
+  - composition
+sources:
+  - https://github.com/braghettos/core-provider
+  - https://github.com/braghettos/krateo-core-provider-chart
