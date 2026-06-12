@@ -218,3 +218,9 @@ cdc:
     HOME: /tmp # home should be set to /tmp or any other writable directory to avoid permission issues with helm https://github.com/helm/helm/issues/8038
     COMPOSITION_CONTROLLER_DEBUG: "false"
     COMPOSITION_CONTROLLER_WORKERS: "10"
+    # Resync interval for every spawned composition-dynamic-controller (default 3m). The
+    # installer's self-bootstrap emits each component's Pass-B CR only once its deps are
+    # Ready AND its CRD is discoverable; advancement to the next dependency level happens
+    # on the cdc's resync (its RESTMapper re-discovers new CRDs on a cache miss). 60s makes
+    # the umbrella self-bootstrap fully hands-off in a few minutes instead of ~3m per level.
+    COMPOSITION_CONTROLLER_RESYNC_INTERVAL: "60s"
