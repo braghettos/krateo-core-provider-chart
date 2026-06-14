@@ -1,10 +1,10 @@
 apiVersion: kagent.dev/v1alpha2
 kind: Agent
 metadata:
-  name: krateo-core-provider-agent
+  name: core-provider-agent
   namespace: {{ .Values.namespace }}
   labels:
-    app.kubernetes.io/name: krateo-core-provider-agent
+    app.kubernetes.io/name: core-provider-agent
     app.kubernetes.io/part-of: krateo-core-provider
 spec:
   type: Declarative
@@ -13,13 +13,13 @@ spec:
   declarative:
     deployment:
       env:
-{{- include "krateo-core-provider-agent.genaiEnv" . | nindent 8 }}
+{{- include "core-provider-agent.genaiEnv" . | nindent 8 }}
     modelConfig: {{ .Values.modelConfig.name }}
     stream: true
     promptTemplate:
       dataSources:
         - kind: ConfigMap
-          name: krateo-core-provider-agent-prompts-{{ .Values.prompts.language }}
+          name: core-provider-agent-prompts-{{ .Values.prompts.language }}
           alias: prompts
     systemMessage: |
       {{`{{include "prompts/core_provider_agent"}}`}}

@@ -1,4 +1,4 @@
-{{- define "krateo-core-provider-agent.genaiEnv" -}}
+{{- define "core-provider-agent.genaiEnv" -}}
 {{- if .Values.vertexAI.enabled }}
 - name: GOOGLE_GENAI_USE_VERTEXAI
   value: "1"
