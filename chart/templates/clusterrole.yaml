@@ -10,6 +10,7 @@ rules:
   - compositiondefinitions/status
   - schemadefinitions
   - schemadefinitions/status
+  - kubernetestargets
   verbs:
   - '*'
 - apiGroups:
@@ -67,50 +68,6 @@ rules:
   - configmaps
   verbs:
   - "*"
-# allow creating, deleting and retrieving any CertificateSigningRequest
-- apiGroups:
-  - certificates.k8s.io
-  resources:
-  - certificatesigningrequests
-  verbs:
-  - get
-  - create
-  - list
-  - delete
-  - deletecollection
-  - watch
-# allow approving a CertificateSigningRequest:
-- apiGroups:
-  - certificates.k8s.io
-  resources:
-  - certificatesigningrequests/approval
-  verbs:
-  - update
-- apiGroups:
-  - certificates.k8s.io
-  resources:
-  - signers
-  resourceNames:
-  - kubernetes.io/kubelet-serving
-  verbs:
-  - approve
-# allow signing a CertificateSigningRequest:
-- apiGroups:
-  - certificates.k8s.io
-  resources:
-  - certificatesigningrequests/status
-  verbs:
-  - update
-- apiGroups:
-  - "admissionregistration.k8s.io"
-  resources:
-  - mutatingwebhookconfigurations
-  verbs:
-  - get
-  - list
-  - create
-  - patch
-  - update
 - apiGroups:
   - ""
   resources:
