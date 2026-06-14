@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/braghettos/core-provider
+  repository: ghcr.io/braghettos/krateo-core-provider
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -104,7 +104,7 @@ env:
 
 chartInspector:
   image:
-    repository: ghcr.io/braghettos/chart-inspector
+    repository: ghcr.io/braghettos/krateo-chart-inspector
     pullPolicy: IfNotPresent
     tag: 1.0.2
   
@@ -137,7 +137,7 @@ chartInspector:
 
 cdc:
   image:
-    repository: ghcr.io/braghettos/composition-dynamic-controller
+    repository: ghcr.io/braghettos/krateo-composition-dynamic-controller
     pullPolicy: IfNotPresent
     tag: 1.0.2
   replicaCount: 1
