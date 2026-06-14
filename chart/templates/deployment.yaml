@@ -44,9 +44,6 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-            - containerPort: 9443
-              name: webhook-server
-              protocol: TCP
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
@@ -63,9 +60,6 @@ spec:
               readOnly: true
             - mountPath: /tmp/assets/cdc-rbac
               name: cdc-rbac
-              readOnly: true
-            - mountPath: /tmp/assets/mutating-webhook-configuration
-              name: mutating-webhook-configuration
               readOnly: true
             - mountPath: /tmp/assets/json-schema-configmap
               name: jsonschema-configmap
@@ -88,9 +82,6 @@ spec:
         - name: cdc-rbac
           configMap:
             name: {{ include "core-provider.fullname" . }}-rbac-configmap
-        - name: mutating-webhook-configuration
-          configMap:
-            name: {{ include "core-provider.fullname" . }}-mutating-webhook-configuration
         - name: jsonschema-configmap
           configMap:
             name: {{ include "core-provider.fullname" . }}-jsonschema-configmap
