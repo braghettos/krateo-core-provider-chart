@@ -1,5 +1,5 @@
 apiVersion: v2
-name: core-provider
+name: krateo-core-provider
 description: Krateo PlatformOps Core Provider
 
 # A chart can be either an 'application' or a 'library' chart.
