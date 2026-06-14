@@ -55,7 +55,7 @@ jobs:
 
       - name: Substitute version placeholders
         run: |
-          for f in chart/Chart.yaml crd-chart/Chart.yaml; do
+          for f in chart/Chart.yaml crd-chart/Chart.yaml target-chart/Chart.yaml; do
             [ -f "$f" ] || continue
             sed -i "s/CHART_VERSION/${{ steps.ver.outputs.chart_version }}/g" "$f"
             sed -i "s/APP_VERSION/${{ steps.ver.outputs.app_version }}/g" "$f"
@@ -84,6 +84,13 @@ jobs:
 
       - name: Push chart
         run: helm push dist/*.tgz "${OCI_REPO}"
+
+      - name: Package & push target-chart (if present)
+        run: |
+          if [ -f target-chart/Chart.yaml ]; then
+            helm package target-chart -d dist-target/
+            helm push dist-target/*.tgz "${OCI_REPO}"
+          fi
 
       - name: Package & push the federated agent chart (if present)
         run: |
