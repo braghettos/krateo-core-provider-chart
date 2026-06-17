@@ -1,10 +1,10 @@
 apiVersion: kagent.dev/v1alpha2
 kind: Agent
 metadata:
-  name: core-provider-agent
+  name: krateo-core-provider-agent
   namespace: {{ .Values.namespace }}
   labels:
-    app.kubernetes.io/name: core-provider-agent
+    app.kubernetes.io/name: krateo-core-provider-agent
     app.kubernetes.io/part-of: krateo-core-provider
 spec:
   type: Declarative
@@ -24,11 +24,6 @@ spec:
     systemMessage: |
       {{`{{include "prompts/core_provider_agent"}}`}}
     tools:
-      - type: McpServer
-        mcpServer:
-          name: krateo-blueprint-tools
-          kind: RemoteMCPServer
-          apiGroup: kagent.dev
       - type: McpServer
         mcpServer:
           name: kagent-tool-server
