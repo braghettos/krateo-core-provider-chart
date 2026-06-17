@@ -9,7 +9,7 @@ metadata:
 spec:
   type: Declarative
   description: >-
-    The Krateo blueprints/composition-engine expert: manages CompositionDefinitions, compositions and the marketplace. Knows braghettos/core-provider + braghettos/krateo-core-provider-chart.
+    The Krateo blueprints/composition-engine expert: manages CompositionDefinitions, compositions and the marketplace. Knows braghettos/krateo-core-provider + braghettos/krateo-core-provider-chart.
   declarative:
     deployment:
       env:
