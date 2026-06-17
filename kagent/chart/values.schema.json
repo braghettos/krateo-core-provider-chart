@@ -91,6 +91,19 @@
         }
       }
     },
+    "fetch": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Tokenless fetch MCP server the agent uses to GET its version-pinned public raw docs URL.",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "mcpServer": {
+          "type": "string"
+        }
+      }
+    },
     "resources": {
       "type": "object",
       "additionalProperties": true
