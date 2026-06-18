@@ -4,3 +4,10 @@ metadata:
   name: {{`{{ .resource }}`}}-{{`{{ .apiVersion }}`}}
   namespace: {{`{{ .namespace }}`}}
 rules:
+# The cdc must manage Jobs in its namespace: the installer umbrella renders its own
+# teardown-hook Jobs into the self-composition release, and `helm uninstall` of that release
+# (on teardown) must be able to delete them. Without this, uninstall fails with
+# `jobs.batch "..." is forbidden` and the teardown deadlocks. Namespaced (least-privilege).
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
