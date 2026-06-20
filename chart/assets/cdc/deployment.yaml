@@ -53,12 +53,29 @@ spec:
             {{- toYaml .Values.cdc.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.cdc.resources | nindent 12 }}
-      {{- with .Values.cdc.volumeMounts }}
           volumeMounts:
+          {{ "{{" }}- if .api_ref_name {{ "}}" }}
+            # Projected authn-audience ServiceAccount token, mounted only when the
+            # CompositionDefinition declares an apiRef. The CDC exchanges it for a service JWT
+            # (authn /serviceaccount/login) to resolve the RESTAction .api status source.
+            - name: authn-serviceaccount-token
+              mountPath: /var/run/secrets/krateo.io/serviceaccount
+              readOnly: true
+          {{ "{{" }}- end {{ "}}" }}
+          {{- with .Values.cdc.volumeMounts }}
             {{- toYaml . | nindent 12 }}
-      {{- end }}
-      {{- with .Values.cdc.volumes }}
+          {{- end }}
       volumes:
+      {{ "{{" }}- if .api_ref_name {{ "}}" }}
+        - name: authn-serviceaccount-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  audience: authn
+                  expirationSeconds: 3600
+      {{ "{{" }}- end {{ "}}" }}
+      {{- with .Values.cdc.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.cdc.nodeSelector }}
