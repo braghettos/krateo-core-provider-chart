@@ -174,17 +174,18 @@ cdc:
     # runAsNonRoot: true
     # runAsUser: 1000
 
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  # chart-inspector renders the WHOLE umbrella to compute RBAC; core-provider calls it with a
+  # ~30s HTTP timeout. On a heavy umbrella (full agent fleet + observability) on a CPU-contended
+  # node the render exceeds that timeout ("getting chartinspector: context deadline exceeded"),
+  # wedging the install (#56). A guaranteed CPU request keeps the render fast enough; the burst
+  # limit covers the heaviest umbrellas. Tune down for tiny single-component installs if needed.
+  resources:
+    requests:
+      cpu: "1"
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 1Gi
 
   # livenessProbe:
   #   httpGet:
