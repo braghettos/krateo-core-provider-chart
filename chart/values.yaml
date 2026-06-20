@@ -134,6 +134,18 @@ chartInspector:
     port: 80
   env:
     HOME: /tmp # home should be set to /tmp or any other writable directory to avoid permission issues with helm https://github.com/helm/helm/issues/8038
+  # chart-inspector renders the WHOLE umbrella to compute RBAC; core-provider calls it with a
+  # ~30s HTTP timeout. On a heavy umbrella (full agent fleet + observability) on a CPU-contended
+  # node the render exceeds that timeout ("getting chartinspector: context deadline exceeded"),
+  # wedging the install (#56). A guaranteed CPU request keeps the render fast enough; the burst
+  # limit covers the heaviest umbrellas. Tune down for tiny single-component installs if needed.
+  resources:
+    requests:
+      cpu: "1"
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 1Gi
 
 cdc:
   image:
@@ -174,18 +186,7 @@ cdc:
     # runAsNonRoot: true
     # runAsUser: 1000
 
-  # chart-inspector renders the WHOLE umbrella to compute RBAC; core-provider calls it with a
-  # ~30s HTTP timeout. On a heavy umbrella (full agent fleet + observability) on a CPU-contended
-  # node the render exceeds that timeout ("getting chartinspector: context deadline exceeded"),
-  # wedging the install (#56). A guaranteed CPU request keeps the render fast enough; the burst
-  # limit covers the heaviest umbrellas. Tune down for tiny single-component installs if needed.
-  resources:
-    requests:
-      cpu: "1"
-      memory: 512Mi
-    limits:
-      cpu: "2"
-      memory: 1Gi
+  resources: {}
 
   # livenessProbe:
   #   httpGet:

@@ -430,6 +430,11 @@
           "default": {
             "HOME": "/tmp"
           }
+        },
+        "resources": {
+          "type": "object",
+          "title": "Resources",
+          "default": {}
         }
       }
     },
