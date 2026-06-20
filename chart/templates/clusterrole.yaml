@@ -77,3 +77,18 @@ rules:
 - apiGroups: ["events.k8s.io"]
   resources: ["events"]
   verbs: ["create", "patch", "update"]
+# Manage the authn allowlist mapping for compositions that declare an apiRef, so the CDC
+# ServiceAccount may exchange its projected token for a service JWT (created in the authn
+# operator namespace on deploy, removed on undeploy).
+- apiGroups:
+  - serviceaccount.authn.krateo.io
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
