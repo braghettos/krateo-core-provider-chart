@@ -14,6 +14,9 @@ data:
   COMPOSITION_CONTROLLER_SA_NAME: {{ "{{" }} .composition_controller_sa_name {{ "}}" }}
   COMPOSITION_CONTROLLER_SA_NAMESPACE: {{ "{{" }} .composition_controller_sa_namespace {{ "}}" }}
   COMPOSITION_CONTROLLER_STATUS_DATA_TEMPLATE: {{ "{{" }} .status_data_template | quote {{ "}}" }}
+  COMPOSITION_CONTROLLER_API_REF_NAME: {{ "{{" }} .api_ref_name | quote {{ "}}" }}
+  COMPOSITION_CONTROLLER_API_REF_NAMESPACE: {{ "{{" }} .api_ref_namespace | quote {{ "}}" }}
+  COMPOSITION_CONTROLLER_API_REF_EXTRAS: {{ "{{" }} .api_ref_extras | quote {{ "}}" }}
   URL_CHART_INSPECTOR: http://{{ include "chart-inspector.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8081/
   KRATEO_NAMESPACE: {{ .Release.Namespace }}
   DEPLOYMENT_NAME: {{ "{{" }} .resource {{ "}}" }}-{{ "{{" }} .apiVersion {{ "}}" }}-controller
