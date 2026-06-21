@@ -36,6 +36,38 @@ optional federated AI agent for blueprints/compositions.
 > and every remote target (the GA `MutatingAdmissionPolicy` API). core-provider hosts no
 > admission webhooks.
 
+## Composition status projection (`apiRef`)
+
+The chart deploys an **apiRef-capable composition-dynamic-controller (cdc)** — `cdc.image.tag`
+is pinned to `1.1.0`. When a `CompositionDefinition` declares an `apiRef`, the cdc projects its
+Composition's status from a RESTAction `.api` status source. core-provider renders the per-
+composition cdc assets (`chart/assets/cdc/`) to wire this up; nothing here is enabled for
+compositions that do not declare an `apiRef`.
+
+- **cdc ConfigMap** (`chart/assets/cdc/configmap.yaml`) — core-provider populates the status-
+  projection env keys per composition: `COMPOSITION_CONTROLLER_STATUS_DATA_TEMPLATE` (the status
+  projection template) and `COMPOSITION_CONTROLLER_API_REF_NAME` / `…_NAMESPACE` / `…_EXTRAS`
+  (the resolved `apiRef`). They render empty for compositions without an `apiRef`.
+- **Projected authn token** (`chart/assets/cdc/deployment.yaml`) — **only when `apiRef` is set**,
+  the cdc Deployment projects an `authn`-audience ServiceAccount token at
+  `/var/run/secrets/krateo.io/serviceaccount` (1h expiry). The cdc exchanges it for a service JWT
+  (authn `/serviceaccount/login`) to resolve the RESTAction `.api` status source.
+- **Authn allowlist mapping** (`chart/assets/cdc/rbac/authn-serviceaccount.yaml`, registered in
+  `chart/templates/cdc-rbac.yaml`) — core-provider auto-provisions a
+  `serviceaccount.authn.krateo.io/ServiceAccount` allowlist entry that lets the cdc ServiceAccount
+  log in to authn under the per-composition group `krateo:cdc:<resource>-<apiVersion>`. It is
+  created in the authn operator namespace on deploy and removed on undeploy. The operator
+  namespace is configurable on core-provider via `COMPOSITION_AUTHN_NAMESPACE` (default
+  `krateo-system`).
+- **ClusterRole RBAC** (`chart/templates/clusterrole.yaml`) — the core-provider engine ClusterRole
+  grants manage rights on `serviceaccounts.serviceaccount.authn.krateo.io` so it can author and
+  reap that mapping.
+
+> **Platform-operator step:** authn never authors RBAC. To let a composition's `apiRef` calls
+> actually read anything, the platform operator must bind a `ClusterRole` to the per-composition
+> group `krateo:cdc:<resource>-<apiVersion>`. The chart provisions the login allowlist, not the
+> authorization.
+
 ## How the installer consumes it
 
 In **bootstrap mode** the umbrella pulls `krateo-core-provider` + `krateo-core-provider-crd` as
