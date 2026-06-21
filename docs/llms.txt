@@ -32,7 +32,12 @@ component's.
   prereq, `kagent/chart` agent), the self-managing CompositionDefinition, and what the app chart
   renders (the core-provider Deployment, the chart-inspector sidecar Deployment/Service, the cdc
   asset ConfigMaps, the engine ClusterRole, and the composition-version / max-name-length admission
-  policies). Read first.
+  policies). Read first. Covers the **apiRef status-projection** wiring core-provider renders per
+  composition: the apiRef-capable cdc (`cdc.image.tag` `1.1.0`), the
+  `COMPOSITION_CONTROLLER_STATUS_DATA_TEMPLATE` / `…_API_REF_NAME|NAMESPACE|EXTRAS` cdc ConfigMap
+  keys, the `apiRef`-gated projected `authn`-audience SA token volume, and the auto-provisioned
+  `serviceaccount.authn.krateo.io` allowlist mapping (+ the engine ClusterRole grant that lets
+  core-provider author it).
 
 ## Deployment / CRD / wiring
 
@@ -44,10 +49,13 @@ component's.
   and it is intentionally NOT shipped here.
 - [wiring.md](wiring.md): the `chart/values.yaml` surface (service `ClusterIP`/80, `resources`,
   `env` debug flags, the nested `chartInspector.*` and `cdc.*` blocks incl.
-  `COMPOSITION_CONTROLLER_RESYNC_INTERVAL`, image pinning), how the installer pins+wires it in
-  bootstrap mode, dependencies (k8s ≥ 1.36 for the GA `MutatingAdmissionPolicy`), and the real
-  gotchas (resync-interval drives self-bootstrap pace, the stale CRD-discovery cache restart, remote
-  targets need the `target-chart` policy + RBAC, never bundle the CRD subchart).
+  `COMPOSITION_CONTROLLER_RESYNC_INTERVAL`, the `cdc.image.tag` `1.1.0` (apiRef-capable cdc) pin),
+  how the installer pins+wires it in bootstrap mode, dependencies (k8s ≥ 1.36 for the GA
+  `MutatingAdmissionPolicy`), and the real gotchas (resync-interval drives self-bootstrap pace, the
+  stale CRD-discovery cache restart, remote targets need the `target-chart` policy + RBAC, never
+  bundle the CRD subchart, and consuming a composition `apiRef` needs the platform operator to bind
+  a ClusterRole to the per-composition group `krateo:cdc:<resource>-<apiVersion>` — authn never
+  authors RBAC).
 
 ## Cross-repo (the internals & runtime half)
 
