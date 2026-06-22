@@ -23,11 +23,16 @@ version: CHART_VERSION
 # It is recommended to use it with quotes.
 appVersion: APP_VERSION
 home: https://krateo.io
-icon: https://github.com/krateoplatformops/krateo/blob/main/docs/media/logo.svg
+icon: https://raw.githubusercontent.com/krateoplatformops/krateo/main/docs/media/logo.svg
 keywords:
   - krateo
   - platformops
   - core-provider
   - composition
+  - blueprint
 sources:
   - https://github.com/braghettos/core-provider
+annotations:
+  krateo.io/category: application
+  krateo.io/maturity: stable
+  krateoSupportedVersion: ">= 2.5.1"
