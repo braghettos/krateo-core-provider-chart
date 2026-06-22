@@ -665,6 +665,24 @@
       "type": "object",
       "description": "Kubernetes probe configuration (httpGet/tcpSocket/exec + timing). Empty/unset uses chart defaults.",
       "additionalProperties": true
+    },
+    "otel": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "tracing": {
+          "type": "boolean"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        }
+      }
     }
   }
 }

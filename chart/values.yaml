@@ -10,6 +10,17 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+# OpenTelemetry export for the engine (core-provider) AND every spawned cdc. DEFAULT-OFF: with
+# enabled=false the deployments emit no OTEL_* env and are byte-identical (no churn). Flip
+# enabled=true + set endpoint to the OTLP collector (e.g. http://otel-collector.<ns>.svc:4318)
+# to stream metrics+traces to the ClickHouse stack. The installer sets these when observability
+# is on. (Logs are always-on structured JSON regardless of this block.)
+otel:
+  enabled: false
+  tracing: true
+  endpoint: ""
+  protocol: http/protobuf
+
 imagePullSecrets: []
 nameOverride: "core-provider"
 fullnameOverride: ""
@@ -151,7 +162,7 @@ cdc:
   image:
     repository: ghcr.io/braghettos/krateo-composition-dynamic-controller
     pullPolicy: IfNotPresent
-    tag: 1.1.1
+    tag: 1.2.0
   replicaCount: 1
   imagePullSecrets: []
   nameOverride: ""

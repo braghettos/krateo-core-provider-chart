@@ -23,6 +23,13 @@ data:
   {{- if .Values.cdc.metrics.enabled }}
   COMPOSITION_CONTROLLER_METRICS_SERVER_PORT: "{{ .Values.cdc.metrics.port | default 0 }}" # Set to 0 to disable metrics server
   {{- end }}
+  {{- if .Values.otel.enabled }}
+  OTEL_ENABLED: "true"
+  OTEL_TRACING_ENABLED: "{{ .Values.otel.tracing }}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.otel.endpoint | quote }}
+  OTEL_EXPORTER_OTLP_PROTOCOL: {{ .Values.otel.protocol | default "http/protobuf" | quote }}
+  SERVICE_VERSION: {{ .Values.cdc.image.tag | quote }}
+  {{- end }}
   {{- range $key, $value := .Values.cdc.env }}
   {{ $key }}: {{ $value | quote }}
   {{- end }}
