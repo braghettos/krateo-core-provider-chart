@@ -13,11 +13,11 @@ spec:
       {{- include "core-provider.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/configmap: {{ printf "%s%s%s%s%s%s" (include (print $.Template.BasePath "/configmap.yaml") .) (include (print $.Template.BasePath "/cdc-configmap.yaml") .) (include (print $.Template.BasePath "/cdc-deployment.yaml") .) (include (print $.Template.BasePath "/cdc-rbac.yaml") .) (include (print $.Template.BasePath "/cdc-service.yaml") .) (include (print $.Template.BasePath "/jsonschema-configmap.yaml") .) | sha256sum }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "core-provider.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
