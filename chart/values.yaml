@@ -113,6 +113,24 @@ affinity: {}
 env:
   CORE_PROVIDER_DEBUG: "false"
 
+# apiRefRBAC — auto-generate the RBAC that authorizes a CompositionDefinition's apiRef RESTAction
+# reads. When enabled, core-provider's pod gets a projected authn-audience token and an authn
+# allowlist mapping, and calls snowplow's /rbac (authenticated) to grant the per-composition group
+# exactly the reads the RESTAction performs.
+#
+# Requires the authn serviceaccount login strategy (CRD serviceaccount.authn.krateo.io) to be
+# installed; set enabled=false on clusters without it.
+apiRefRBAC:
+  enabled: true
+  snowplowUrl: http://snowplow.krateo-system.svc.cluster.local:8081
+  authnUrl: http://authn.krateo-system.svc.cluster.local:8082
+  # Namespace where core-provider's authn allowlist mapping is created (where authn watches).
+  authnNamespace: krateo-system
+  # Group the issued identity belongs to (nominal — /rbac runs under snowplow's own SA).
+  group: "krateo:core-provider"
+  tokenAudience: authn
+  tokenExpirationSeconds: 3600
+
 chartInspector:
   image:
     repository: ghcr.io/braghettos/krateo-chart-inspector

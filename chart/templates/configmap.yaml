@@ -15,3 +15,10 @@ data:
   {{- range $key, $value := .Values.env }}
   {{ $key }}: {{ $value | quote }}
   {{- end }}
+  {{- if .Values.apiRefRBAC.enabled }}
+  # apiRef RESTAction RBAC: core-provider calls snowplow's /rbac (authenticated via authn) to
+  # enumerate the reads a referenced RESTAction performs and grants them to the per-composition
+  # group. See braghettos/core-provider docs/design/apiref-rbac-generation.md.
+  CORE_PROVIDER_SNOWPLOW_URL: {{ .Values.apiRefRBAC.snowplowUrl | quote }}
+  CORE_PROVIDER_AUTHN_URL: {{ .Values.apiRefRBAC.authnUrl | quote }}
+  {{- end }}
