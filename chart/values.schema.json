@@ -279,6 +279,20 @@
         "CORE_PROVIDER_DEBUG": "false"
       }
     },
+    "apiRefRBAC": {
+      "type": "object",
+      "title": "apiRef RESTAction RBAC auto-generation",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "snowplowUrl": { "type": "string", "title": "Snowplow base URL" },
+        "authnUrl": { "type": "string", "title": "Authn base URL" },
+        "authnNamespace": { "type": "string", "title": "Authn operator namespace", "default": "krateo-system" },
+        "group": { "type": "string", "title": "Issued identity group", "default": "krateo:core-provider" },
+        "tokenAudience": { "type": "string", "default": "authn" },
+        "tokenExpirationSeconds": { "type": "integer", "default": 3600 }
+      }
+    },
     "chartInspector": {
       "type": "object",
       "title": "Chart inspector",
