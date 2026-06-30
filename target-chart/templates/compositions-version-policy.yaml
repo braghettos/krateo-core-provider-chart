@@ -12,7 +12,7 @@ cluster. Requires the GA MutatingAdmissionPolicy API (Kubernetes >= 1.36).
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingAdmissionPolicy
 metadata:
-  name: krateo-compositions-version-policy
+  name: krateo-composition-version
 spec:
   matchConstraints:
     matchPolicy: Exact
@@ -32,6 +32,6 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingAdmissionPolicyBinding
 metadata:
-  name: krateo-compositions-version-binding
+  name: krateo-composition-version
 spec:
-  policyName: krateo-compositions-version-policy
+  policyName: krateo-composition-version
