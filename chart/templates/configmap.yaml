@@ -21,4 +21,12 @@ data:
   # group. See braghettos/core-provider docs/design/apiref-rbac-generation.md.
   CORE_PROVIDER_SNOWPLOW_URL: {{ .Values.apiRefRBAC.snowplowUrl | quote }}
   CORE_PROVIDER_AUTHN_URL: {{ .Values.apiRefRBAC.authnUrl | quote }}
+  # Self-identity for core-provider's OWN authn allowlist mapping. core-provider provisions this
+  # mapping at RUNTIME (the first time a composition declares an apiRef, when authn is up) instead
+  # of a declarative CR here — the serviceaccount.authn.krateo.io CRD is installed later (as a
+  # component), so a bootstrap-time CR could not be applied.
+  CORE_PROVIDER_APIREF_SELF_SA_NAME: {{ include "core-provider.serviceAccountName" . | quote }}
+  CORE_PROVIDER_APIREF_SELF_SA_NAMESPACE: {{ .Release.Namespace | quote }}
+  CORE_PROVIDER_APIREF_GROUP: {{ .Values.apiRefRBAC.group | quote }}
+  COMPOSITION_AUTHN_NAMESPACE: {{ .Values.apiRefRBAC.authnNamespace | quote }}
   {{- end }}
