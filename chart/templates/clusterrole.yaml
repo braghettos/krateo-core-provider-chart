@@ -11,6 +11,11 @@ rules:
   - schemadefinitions
   - schemadefinitions/status
   - kubernetestargets
+  # /status is a SEPARATE grant: the KubernetesTarget reachability reconciler writes it, and the
+  # RemoteInstall controller manages remoteinstalls (+ status) — one declarative install-on-spoke.
+  - kubernetestargets/status
+  - remoteinstalls
+  - remoteinstalls/status
   verbs:
   - '*'
 - apiGroups:
