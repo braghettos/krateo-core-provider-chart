@@ -180,7 +180,7 @@ cdc:
   image:
     repository: ghcr.io/braghettos/krateo-composition-dynamic-controller
     pullPolicy: IfNotPresent
-    tag: 1.2.3
+    tag: 1.2.4
   replicaCount: 1
   imagePullSecrets: []
   nameOverride: ""
