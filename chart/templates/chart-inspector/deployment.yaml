@@ -44,10 +44,14 @@ spec:
             - name: http
               containerPort: {{ .Values.chartInspector.service.port }}
               protocol: TCP
+          {{- with .Values.chartInspector.livenessProbe }}
           livenessProbe:
-            {{- toYaml .Values.chartInspector.livenessProbe | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.chartInspector.readinessProbe }}
           readinessProbe:
-            {{- toYaml .Values.chartInspector.readinessProbe | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.chartInspector.resources | nindent 12 }}
 
@@ -67,6 +71,19 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      topologySpreadConstraints:
+        {{- with .Values.chartInspector.topologySpreadConstraints }}
+        {{- toYaml . | nindent 8 }}
+        {{- else }}
+        # Default SOFT spread: chart-inspector ships at >=2 replicas, so prefer different nodes for
+        # real node-failure HA. ScheduleAnyway keeps single-node/dev clusters schedulable.
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              {{- include "chart-inspector.selectorLabels" . | nindent 14 }}
+        {{- end }}
       {{- with .Values.chartInspector.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
