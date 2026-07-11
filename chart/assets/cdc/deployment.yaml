@@ -45,6 +45,17 @@ spec:
             - -group={{ "{{" }} .apiGroup {{ "}}" }}
             - -version={{ "{{" }} .apiVersion {{ "}}" }}
             - -resource={{ "{{" }} .resource {{ "}}" }}
+            # Per-CompositionDefinition tuning (spec.controller). core-provider injects .workers /
+            # .resyncInterval only when the definition sets them; when unset these lines are omitted
+            # entirely and the CDC applies its own defaults (1 worker, 3m resync), so definitions
+            # without spec.controller render byte-identically to before and don't restart on upgrade.
+            # Opt-in per Kind — the escape hatch from this otherwise-uniform template.
+            {{ "{{" }}- if .workers }}
+            - -workers={{ "{{" }} .workers {{ "}}" }}
+            {{ "{{" }}- end }}
+            {{ "{{" }}- if .resyncInterval }}
+            - -resync-interval={{ "{{" }} .resyncInterval {{ "}}" }}
+            {{ "{{" }}- end }}
           ports:
             {{- if .Values.cdc.metrics.enabled }}
             - name: metrics
