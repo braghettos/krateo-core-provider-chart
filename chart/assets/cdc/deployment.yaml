@@ -70,8 +70,11 @@ spec:
           readinessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          resources:
-            {{- toYaml .Values.cdc.resources | nindent 12 }}
+          # Per-Kind override (spec.controller.resources) when core-provider injects .resources;
+          # otherwise the chart-global cdc.resources default (rendered as JSON — valid YAML — so the
+          # runtime layer can fall back to it without a nested block). Unset renders identically to
+          # the prior chart-global behavior.
+          resources: {{ "{{" }} if .resources }}{{ "{{" }} .resources }}{{ "{{" }} else }}{{ .Values.cdc.resources | toJson }}{{ "{{" }} end }}
           volumeMounts:
           {{ "{{" }}- if .api_ref_name {{ "}}" }}
             # Projected authn-audience ServiceAccount token, mounted only when the
