@@ -46,16 +46,25 @@ spec:
             - -version={{ "{{" }} .apiVersion {{ "}}" }}
             - -resource={{ "{{" }} .resource {{ "}}" }}
             # Per-CompositionDefinition tuning (spec.controller). core-provider injects .workers /
-            # .resyncInterval only when the definition sets them; when unset these lines are omitted
-            # entirely and the CDC applies its own defaults (1 worker, 3m resync), so definitions
-            # without spec.controller render byte-identically to before and don't restart on upgrade.
-            # Opt-in per Kind — the escape hatch from this otherwise-uniform template.
+            # .resyncInterval only when a definition sets them (per-Kind override). The chart-global
+            # cdc.workers / cdc.resyncInterval, when set, act as a fleet-wide DEFAULT that every CDC
+            # inherits and any definition's spec.controller still overrides. When BOTH are unset the
+            # arg is omitted entirely and the CDC uses its own built-in default (1 worker, 3m resync),
+            # so nothing changes for existing definitions and they don't restart on upgrade.
+            {{- if .Values.cdc.workers }}
+            - -workers={{ "{{" }} .workers | default {{ .Values.cdc.workers }} {{ "}}" }}
+            {{- else }}
             {{ "{{" }}- if .workers }}
             - -workers={{ "{{" }} .workers {{ "}}" }}
             {{ "{{" }}- end }}
+            {{- end }}
+            {{- if .Values.cdc.resyncInterval }}
+            - -resync-interval={{ "{{" }} .resyncInterval | default {{ .Values.cdc.resyncInterval | quote }} {{ "}}" }}
+            {{- else }}
             {{ "{{" }}- if .resyncInterval }}
             - -resync-interval={{ "{{" }} .resyncInterval {{ "}}" }}
             {{ "{{" }}- end }}
+            {{- end }}
           ports:
             {{- if .Values.cdc.metrics.enabled }}
             - name: metrics

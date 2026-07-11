@@ -236,6 +236,12 @@ cdc:
     pullPolicy: IfNotPresent
     tag: 1.3.10
   replicaCount: 1
+  # workers / resyncInterval: OPTIONAL fleet-wide defaults for every CDC's reconcile concurrency and
+  # resync interval. Leave unset (the default) for per-Kind opt-in only, via a CompositionDefinition's
+  # spec.controller; set here to apply a floor across ALL CDCs (a definition's spec.controller still
+  # overrides). Unset ⇒ the arg is omitted and the CDC uses its own built-in default (1 worker / 3m).
+  # workers: 4
+  # resyncInterval: "10m"
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""

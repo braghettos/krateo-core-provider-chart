@@ -1,0 +1,36 @@
+# Chart-specific golden + render test for the doubly-templated CDC Deployment asset
+# (chart/assets/cdc/deployment.yaml), which Helm renders once and core-provider's text/template
+# engine renders again per CompositionDefinition. Kept separate from the canonical lint.yaml so that
+# shared workflow stays identical across krateo-* chart repos.
+name: cdc-template
+
+on:
+  pull_request:
+    paths:
+      - chart/assets/cdc/deployment.yaml
+      - chart/values.yaml
+      - chart/values.schema.json
+      - hack/verify-cdc-template.sh
+      - hack/golden/**
+      - .github/workflows/cdc-template.yaml
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  cdc-template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.19.0
+
+      # ubuntu-latest ships python3; the script needs only helm + python3 (PyYAML is preinstalled).
+      - name: Verify CDC runtime template (stage-1 golden + stage-2 render)
+        run: ./hack/verify-cdc-template.sh
