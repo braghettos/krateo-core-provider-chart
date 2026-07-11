@@ -101,3 +101,19 @@ rules:
   - update
   - patch
   - delete
+{{- if .Values.leaderElection.enabled }}
+# Leader election (replicaCount>=2): the controller-runtime manager holds a coordination.k8s.io
+# Lease so only one replica reconciles at a time.
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+{{- end }}

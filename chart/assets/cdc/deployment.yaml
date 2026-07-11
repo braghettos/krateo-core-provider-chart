@@ -11,9 +11,9 @@ metadata:
     app.kubernetes.io/part-of: krateo
     app.kubernetes.io/managed-by: krateo
 spec:
-  {{- if not .Values.cdc.autoscaling.enabled }}
+  # CDC is a per-composition controller: always a fixed replica count, never autoscaled (its
+  # dead autoscaling.* values were removed to defuse the strip-replicas trap).
   replicas: {{ .Values.cdc.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ "{{" }} trunc 63 .name {{ "}}" }}
@@ -26,6 +26,10 @@ spec:
         app.kubernetes.io/part-of: krateo
     spec:
       serviceAccountName: {{ "{{" }} .serviceAccountName {{ "}}" }}
+      {{- with .Values.cdc.terminationGracePeriodSeconds }}
+      # Must exceed the graceful-shutdown drain window so the kubelet does not SIGKILL mid-drain.
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.cdc.podSecurityContext | nindent 8 }}
       containers:
@@ -47,10 +51,14 @@ spec:
               containerPort: {{ .Values.cdc.metrics.port }}
               protocol: TCP
             {{- end }}
+          {{- with .Values.cdc.livenessProbe }}
           livenessProbe:
-            {{- toYaml .Values.cdc.livenessProbe | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.cdc.readinessProbe }}
           readinessProbe:
-            {{- toYaml .Values.cdc.readinessProbe | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.cdc.resources | nindent 12 }}
           volumeMounts:

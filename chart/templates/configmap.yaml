@@ -15,6 +15,11 @@ data:
   {{- range $key, $value := .Values.env }}
   {{ $key }}: {{ $value | quote }}
   {{- end }}
+  {{- if .Values.leaderElection.enabled }}
+  # Required for replicaCount>=2: active-passive HA via a coordination.k8s.io Lease. Without it,
+  # multiple replicas double-reconcile. The Lease RBAC is granted in clusterrole.yaml when on.
+  CORE_PROVIDER_LEADER_ELECTION: "true"
+  {{- end }}
   {{- if .Values.apiRefRBAC.enabled }}
   # apiRef RESTAction RBAC: core-provider calls snowplow's /rbac (authenticated via authn) to
   # enumerate the reads a referenced RESTAction performs and grants them to the per-composition

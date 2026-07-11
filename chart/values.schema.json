@@ -284,13 +284,36 @@
       "title": "apiRef RESTAction RBAC auto-generation",
       "additionalProperties": false,
       "properties": {
-        "enabled": { "type": "boolean", "default": true },
-        "snowplowUrl": { "type": "string", "title": "Snowplow base URL" },
-        "authnUrl": { "type": "string", "title": "Authn base URL" },
-        "authnNamespace": { "type": "string", "title": "Authn operator namespace", "default": "krateo-system" },
-        "group": { "type": "string", "title": "Issued identity group", "default": "krateo:core-provider" },
-        "tokenAudience": { "type": "string", "default": "authn" },
-        "tokenExpirationSeconds": { "type": "integer", "default": 3600 }
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "snowplowUrl": {
+          "type": "string",
+          "title": "Snowplow base URL"
+        },
+        "authnUrl": {
+          "type": "string",
+          "title": "Authn base URL"
+        },
+        "authnNamespace": {
+          "type": "string",
+          "title": "Authn operator namespace",
+          "default": "krateo-system"
+        },
+        "group": {
+          "type": "string",
+          "title": "Issued identity group",
+          "default": "krateo:core-provider"
+        },
+        "tokenAudience": {
+          "type": "string",
+          "default": "authn"
+        },
+        "tokenExpirationSeconds": {
+          "type": "integer",
+          "default": 3600
+        }
       }
     },
     "chartInspector": {
@@ -449,6 +472,39 @@
           "type": "object",
           "title": "Resources",
           "default": {}
+        },
+        "livenessProbe": {
+          "type": "object",
+          "description": "Kubernetes probe configuration (httpGet/tcpSocket/exec + timing). Empty/unset uses chart defaults.",
+          "additionalProperties": true
+        },
+        "readinessProbe": {
+          "type": "object",
+          "description": "Kubernetes probe configuration (httpGet/tcpSocket/exec + timing). Empty/unset uses chart defaults.",
+          "additionalProperties": true
+        },
+        "podDisruptionBudget": {
+          "type": "object",
+          "title": "PodDisruptionBudget",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "minAvailable": {
+              "type": [
+                "integer",
+                "string"
+              ],
+              "default": 1
+            }
+          }
+        },
+        "topologySpreadConstraints": {
+          "type": "array",
+          "title": "topologySpreadConstraints",
+          "default": []
         }
       }
     },
@@ -575,37 +631,6 @@
           "title": "Resources",
           "default": {}
         },
-        "autoscaling": {
-          "type": "object",
-          "title": "Autoscaling",
-          "additionalProperties": false,
-          "properties": {
-            "enabled": {
-              "type": "boolean",
-              "title": "Enable autoscaling",
-              "default": false
-            },
-            "minReplicas": {
-              "type": "integer",
-              "title": "Minimum replicas",
-              "default": 1
-            },
-            "maxReplicas": {
-              "type": "integer",
-              "title": "Maximum replicas",
-              "default": 100
-            },
-            "targetCPUUtilizationPercentage": {
-              "type": "integer",
-              "title": "Target CPU utilization percentage",
-              "default": 80
-            },
-            "targetMemoryUtilizationPercentage": {
-              "type": "integer",
-              "title": "Target memory utilization percentage"
-            }
-          }
-        },
         "volumes": {
           "type": "array",
           "title": "Additional volumes",
@@ -662,6 +687,47 @@
             "HOME": "/tmp",
             "COMPOSITION_CONTROLLER_DEBUG": "false"
           }
+        },
+        "terminationGracePeriodSeconds": {
+          "type": "integer",
+          "title": "terminationGracePeriodSeconds"
+        },
+        "autoscaling": {
+          "type": "object",
+          "title": "Autoscaling (DEPRECATED / inert)",
+          "description": "Ignored: the CDC is a per-composition controller and is never autoscaled. Retained only so existing values overrides continue to validate.",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "minReplicas": {
+              "type": "integer",
+              "default": 1
+            },
+            "maxReplicas": {
+              "type": "integer",
+              "default": 100
+            },
+            "targetCPUUtilizationPercentage": {
+              "type": "integer",
+              "default": 80
+            },
+            "targetMemoryUtilizationPercentage": {
+              "type": "integer"
+            }
+          }
+        },
+        "livenessProbe": {
+          "type": "object",
+          "description": "Kubernetes probe configuration (httpGet/tcpSocket/exec + timing). Empty/unset uses chart defaults.",
+          "additionalProperties": true
+        },
+        "readinessProbe": {
+          "type": "object",
+          "description": "Kubernetes probe configuration (httpGet/tcpSocket/exec + timing). Empty/unset uses chart defaults.",
+          "additionalProperties": true
         }
       }
     },
@@ -697,6 +763,45 @@
           "type": "string"
         }
       }
+    },
+    "leaderElection": {
+      "type": "object",
+      "title": "Leader election",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "title": "Enable leader election (required for replicaCount>=2)",
+          "default": false
+        }
+      }
+    },
+    "podDisruptionBudget": {
+      "type": "object",
+      "title": "PodDisruptionBudget",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "minAvailable": {
+          "type": [
+            "integer",
+            "string"
+          ],
+          "default": 1
+        }
+      }
+    },
+    "topologySpreadConstraints": {
+      "type": "array",
+      "title": "topologySpreadConstraints",
+      "default": []
+    },
+    "terminationGracePeriodSeconds": {
+      "type": "integer",
+      "title": "terminationGracePeriodSeconds"
     }
   }
 }
