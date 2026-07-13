@@ -3,13 +3,11 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
-
 image:
   repository: ghcr.io/braghettos/krateo-core-provider
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
-
 # OpenTelemetry export for the engine (core-provider) AND every spawned cdc. DEFAULT-OFF: with
 # enabled=false the deployments emit no OTEL_* env and are byte-identical (no churn). Flip
 # enabled=true + set endpoint to the OTLP collector (e.g. http://otel-collector.<ns>.svc:4318)
@@ -20,11 +18,9 @@ otel:
   tracing: true
   endpoint: ""
   protocol: http/protobuf
-
 imagePullSecrets: []
 nameOverride: "core-provider"
 fullnameOverride: ""
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -35,31 +31,28 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
-
 podAnnotations: {}
 podLabels: {}
-
 podSecurityContext: {}
-  # fsGroup: 2000
+# fsGroup: 2000
 
 securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+# capabilities:
+#   drop:
+#   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
 
 service:
   type: ClusterIP
   port: 80
-
 ingress:
   enabled: false
   className: ""
   annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
   hosts:
     - host: chart-example.local
       paths:
@@ -69,7 +62,6 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
 # A CPU request is REQUIRED for the CPU-utilization HPA to compute a target (utilization is a
 # fraction of the request); with resources:{} the HPA reads <unknown> and never scales.
 resources:
@@ -79,7 +71,6 @@ resources:
   limits:
     cpu: 500m
     memory: 256Mi
-
 # Interim probes: the binary has no /healthz endpoint yet, so we TCP-probe the always-bound metrics
 # port (8080). Replace with httpGet /healthz + /readyz once the binary exposes a health endpoint.
 livenessProbe:
@@ -92,50 +83,38 @@ readinessProbe:
     port: 8080
   initialDelaySeconds: 5
   periodSeconds: 10
-
 # HA is opt-in: raising replicaCount>=2 REQUIRES leaderElection.enabled=true, or the replicas
 # double-reconcile (the binary defaults leader-election off). Enabling it also needs the
 # coordination.k8s.io/leases RBAC, which the chart grants when this is on.
 leaderElection:
   enabled: false
-
 # PodDisruptionBudget — only rendered when enabled AND replicaCount>1 (a PDB on a single replica
 # would block node drains).
 podDisruptionBudget:
   enabled: false
   minAvailable: 1
-
 # Spread replicas across nodes/zones so a single node failure cannot take out all of them. Only
 # meaningful at replicaCount>1; rendered when non-empty.
 topologySpreadConstraints: []
-
 # core-provider's provider-runtime manager drains in-flight reconciles on SIGTERM (controller-runtime
 # GracefulShutdownTimeout, ~30s). Keep the pod grace period above it so the kubelet does not SIGKILL
 # mid-drain.
 terminationGracePeriodSeconds: 45
-
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
 # Additional volumes on the output Deployment definition.
 volumes: []
-
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts: []
-
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}
-
 env:
   CORE_PROVIDER_DEBUG: "false"
-
 # apiRefRBAC — auto-generate the RBAC that authorizes a CompositionDefinition's apiRef RESTAction
 # reads. When enabled, core-provider's pod gets a projected authn-audience token and an authn
 # allowlist mapping, and calls snowplow's /rbac (authenticated) to grant the per-composition group
@@ -153,13 +132,11 @@ apiRefRBAC:
   group: "krateo:core-provider"
   tokenAudience: authn
   tokenExpirationSeconds: 3600
-
 chartInspector:
   image:
     repository: ghcr.io/braghettos/krateo-chart-inspector
     pullPolicy: IfNotPresent
     tag: 1.0.5
-  
   # chart-inspector is stateless (renders manifests to compute RBAC) and is the highest-value HA
   # win: its outage wedges installs on core-provider's ~30s /rbac timeout. It ships HA by default.
   #
@@ -171,7 +148,6 @@ chartInspector:
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
-
   # A real HPA now consumes these (chart/templates/chart-inspector/hpa.yaml). chart-inspector has
   # CPU requests set, so CPU-utilization autoscaling is valid for it.
   autoscaling:
@@ -179,7 +155,6 @@ chartInspector:
     minReplicas: 2
     maxReplicas: 10
     targetCPUUtilizationPercentage: 80
-
   # Interim probes on the always-listening HTTP port (:80). Upgrade to httpGet once a health path
   # is confirmed in the chart-inspector image.
   livenessProbe:
@@ -192,15 +167,12 @@ chartInspector:
       port: 80
     initialDelaySeconds: 5
     periodSeconds: 10
-
   # Rendered only when enabled AND replicaCount>1 (default 2 → a PDB keeps one inspector serving
   # /rbac through a node drain).
   podDisruptionBudget:
     enabled: true
     minAvailable: 1
-
   topologySpreadConstraints: []
-
   serviceAccount:
     # Specifies whether a service account should be created
     create: true
@@ -211,7 +183,6 @@ chartInspector:
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
     name: ""
-
   service:
     type: ClusterIP
     port: 80
@@ -229,12 +200,11 @@ chartInspector:
     limits:
       cpu: "2"
       memory: 1Gi
-
 cdc:
   image:
     repository: ghcr.io/braghettos/krateo-composition-dynamic-controller
     pullPolicy: IfNotPresent
-    tag: 1.3.10
+    tag: 1.3.11
   replicaCount: 1
   # workers / resyncInterval: OPTIONAL fleet-wide defaults for every CDC's reconcile concurrency and
   # resync interval. Leave unset (the default) for per-Kind opt-in only, via a CompositionDefinition's
@@ -245,11 +215,9 @@ cdc:
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
-
   metrics:
     enabled: false
     #port: 8080
-
   serviceAccount:
     # Specifies whether a service account should be created
     create: true
@@ -260,20 +228,18 @@ cdc:
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
     name: ""
-
   podAnnotations: {}
   podLabels: {}
-
   podSecurityContext: {}
-    # fsGroup: 2000
+  # fsGroup: 2000
 
   securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
 
   # One Deployment per composition TYPE runs concurrently, so keep the per-controller footprint
   # small. CDC is single-replica by design (per-composition controller, no leader election).
@@ -284,7 +250,6 @@ cdc:
     limits:
       cpu: 500m
       memory: 256Mi
-
   # CDC exposes no port by default (metrics off, pprof localhost-only), so no TCP/HTTP probe is
   # possible without a binary change or enabling metrics. HA here is clean rollover on redeploy
   # (graceful drain), not readiness-gating — probes are intentionally left off for now.
@@ -298,19 +263,13 @@ cdc:
   # NOTE: the drain code ships in composition-dynamic-controller >= 1.3.2; the default image below
   # (1.2.1) predates it. Bump cdc.image.tag to a >=1.3.2 build to actually run the drain.
   terminationGracePeriodSeconds: 45
-
   # Additional volumes on the output Deployment definition.
   volumes: []
-
   # Additional volumeMounts on the output Deployment definition.
   volumeMounts: []
-
   nodeSelector: {}
-
   tolerations: []
-
   affinity: {}
-
   env:
     HOME: /tmp # home should be set to /tmp or any other writable directory to avoid permission issues with helm https://github.com/helm/helm/issues/8038
     COMPOSITION_CONTROLLER_DEBUG: "false"
