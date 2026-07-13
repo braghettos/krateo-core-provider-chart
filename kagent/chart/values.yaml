@@ -14,6 +14,10 @@ modelConfig:
   apiKeySecretKey: ""
 prompts:
   language: eng
+
+# Human-in-the-loop gate on the mutating k8s tools (k8s_apply_manifest) the agent
+# uses to apply CompositionDefinitions/Compositions. true = pause for approval (safe); false = autonomous.
+hitlApproval: true
 vertexAI:
   enabled: true
   projectID: ""
