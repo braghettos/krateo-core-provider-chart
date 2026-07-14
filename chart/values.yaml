@@ -163,16 +163,27 @@ chartInspector:
     targetCPUUtilizationPercentage: 80
   # Interim probes on the always-listening HTTP port (:80). Upgrade to httpGet once a health path
   # is confirmed in the chart-inspector image.
+  # Tolerance: chart-inspector renders the WHOLE umbrella per /rbac call (CPU-heavy). On cold start
+  # core-provider fans out ~30 concurrent inspect calls (max-reconcile-rate 5 × requeues), pegging
+  # the inspector so a bare tcpSocket probe (timeout 1s, threshold 3 → ~60s) fails and the kubelet
+  # SIGTERM-kills it mid-render — a death-spiral where new replicas die before HPA can scale out
+  # (observed on installer-release: liveness-killed every ~57s, only the pre-load pod surviving).
+  # Give the probes slack (timeout 5s, failureThreshold 6 → ~120s) so a busy-but-alive inspector
+  # stays up and in-rotation while the HPA (maxReplicas 10) adds capacity.
   livenessProbe:
     tcpSocket:
       port: 80
-    initialDelaySeconds: 10
+    initialDelaySeconds: 15
     periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 6
   readinessProbe:
     tcpSocket:
       port: 80
     initialDelaySeconds: 5
     periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
   # Rendered only when enabled AND replicaCount>1 (default 2 → a PDB keeps one inspector serving
   # /rbac through a node drain).
   podDisruptionBudget:
