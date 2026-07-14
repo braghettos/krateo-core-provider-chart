@@ -161,25 +161,24 @@ chartInspector:
     minReplicas: 2
     maxReplicas: 10
     targetCPUUtilizationPercentage: 80
-  # Interim probes on the always-listening HTTP port (:80). Upgrade to httpGet once a health path
-  # is confirmed in the chart-inspector image.
-  # Tolerance: chart-inspector renders the WHOLE umbrella per /rbac call (CPU-heavy). On cold start
-  # core-provider fans out ~30 concurrent inspect calls (max-reconcile-rate 5 × requeues), pegging
-  # the inspector so a bare tcpSocket probe (timeout 1s, threshold 3 → ~60s) fails and the kubelet
-  # SIGTERM-kills it mid-render — a death-spiral where new replicas die before HPA can scale out
-  # (observed on installer-release: liveness-killed every ~57s, only the pre-load pod surviving).
-  # Give the probes slack (timeout 5s, failureThreshold 6 → ~120s) so a busy-but-alive inspector
-  # stays up and in-rotation while the HPA (maxReplicas 10) adds capacity.
+  # Probe port MUST be 8081 — the chart-inspector server (image 1.0.5) listens on 8081, and the
+  # Service already targets 8081. These tcpSocket probes previously pointed at :80 (nothing listens
+  # there), so every pod got "connection refused" and was liveness-killed within ~60s; the only
+  # survivor was a pre-existing pod that had no liveness probe at all. New replicas died before the
+  # HPA could scale, so core-provider's /rbac inspect calls had ~one struggling backend and the CDC
+  # rollout stalled (observed on installer-release). The modest timeout/failureThreshold slack also
+  # keeps a busy-but-alive inspector up during heavy umbrella renders. Upgrade to httpGet /healthz
+  # once the image exposes a health path.
   livenessProbe:
     tcpSocket:
-      port: 80
+      port: 8081
     initialDelaySeconds: 15
     periodSeconds: 20
     timeoutSeconds: 5
     failureThreshold: 6
   readinessProbe:
     tcpSocket:
-      port: 80
+      port: 8081
     initialDelaySeconds: 5
     periodSeconds: 10
     timeoutSeconds: 5
@@ -202,7 +201,10 @@ chartInspector:
     name: ""
   service:
     type: ClusterIP
-    port: 80
+    # Drives the container port only (the Service template hardcodes 8081). The server listens on
+    # 8081, so this MUST be 8081 — at 80 the declared containerPort and the probes mismatched the
+    # real listen port.
+    port: 8081
   env:
     HOME: /tmp # home should be set to /tmp or any other writable directory to avoid permission issues with helm https://github.com/helm/helm/issues/8038
   # chart-inspector renders the WHOLE umbrella to compute RBAC; core-provider calls it with a
