@@ -9,7 +9,11 @@ metadata:
 spec:
   type: Declarative
   description: >-
-    The Krateo blueprints/composition-engine expert: manages CompositionDefinitions, compositions and the marketplace. Knows braghettos/krateo-core-provider + braghettos/krateo-core-provider-chart.
+    The Krateo composition-engine expert: authors and manages CompositionDefinitions (core.krateo.io/v1alpha1)
+    and their blueprint Helm charts (templates + values.yaml + values.schema.json), inspects the generated
+    typed CRDs and Composition instances (composition.krateo.io), wires remote deploys via KubernetesTarget,
+    and browses the blueprint marketplace, grounded in braghettos/krateo-core-provider and
+    braghettos/krateo-core-provider-chart.
   declarative:
     deployment:
       env:
@@ -62,13 +66,27 @@ spec:
 {{- end }}
     a2aConfig:
       skills:
-        - id: blueprints
-          name: Manage blueprints & compositions
-          description: Create/inspect CompositionDefinitions and Compositions, browse the marketplace, grounded in the core-provider source.
-          tags: [krateo, blueprint, composition, core-provider]
+        - id: author-blueprints
+          name: Author blueprints and CompositionDefinitions
+          description: >-
+            Generate a parameterized blueprint chart (templates, values.yaml, values.schema.json) plus its
+            CompositionDefinition so core-provider derives a correctly-typed CRD.
+          tags: [krateo, blueprint, compositiondefinition, helm-chart, core-provider]
           examples:
-            - What is a CompositionDefinition and how do I create one?
-            - List the available blueprints in the marketplace.
+            - Create a CompositionDefinition for my nginx Helm chart at oci://ghcr.io/acme/nginx-chart.
+            - Write a values.schema.json so the generated CRD is fully typed for my blueprint.
+            - How does core-provider derive the Kind and apiVersion from my Chart.yaml name and version?
+            - Set up my CompositionDefinition to deploy to a remote cluster with a KubernetesTarget.
+        - id: inspect-compositions
+          name: Inspect compositions and marketplace
+          description: >-
+            List installed CompositionDefinitions and Composition instances, read the generated CRDs, and
+            browse the marketplace for available blueprints.
+          tags: [krateo, composition, marketplace, crd, inspect]
+          examples:
+            - List the CompositionDefinitions installed in my cluster and show their generated CRDs.
+            - Show me the available blueprints in the marketplace I can install.
+            - What does the spec of my fireworks-app Composition override in the blueprint chart?
     deployment:
       resources:
 {{- toYaml .Values.resources | nindent 8 }}
