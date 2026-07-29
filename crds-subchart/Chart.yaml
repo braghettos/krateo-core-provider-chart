@@ -26,4 +26,4 @@ keywords:
   - core-provider
   - crd
 sources:
-  - https://github.com/braghettos/core-provider
+  - https://github.com/braghettos/krateo-core-provider/tree/APP_VERSION
