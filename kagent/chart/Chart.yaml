@@ -16,5 +16,5 @@ keywords:
   - blueprint
   - composition
 sources:
-  - https://github.com/braghettos/krateo-core-provider
+  - https://github.com/braghettos/krateo-core-provider/tree/APP_VERSION
   - https://github.com/braghettos/krateo-core-provider-chart/tree/SOURCE_REF
