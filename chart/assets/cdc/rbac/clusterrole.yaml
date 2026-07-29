@@ -20,6 +20,16 @@ rules:
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get", "list", "create", "delete", "update"]
+# Read-only, and required by RENDERING rather than by anything the CDC manages: a blueprint may call
+# Helm's `lookup "v1" "Service" ...` (the umbrella does, to discover the ingress LB IP), and that lookup
+# runs under this ServiceAccount during the observe dry-run. Without it the render fails with
+# `services is forbidden` and the composition wedges at Synced=False — seen live on the
+# 0.2.219 -> 0.2.220 deploy (krateo-installer#148). Note the general shape: a template can look up ANY
+# kind, so a blueprint reaching for one not granted here will fail the same way. Grants are added on
+# evidence rather than pre-emptively, to keep this cluster-scoped role least-privilege.
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list", "watch"]
 - apiGroups: ["core.krateo.io"]
   resources: ["compositiondefinitions", "compositiondefinitions/status"]
   verbs: ["get", "list", "watch"]
