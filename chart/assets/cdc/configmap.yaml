@@ -26,7 +26,7 @@ data:
   {{- if .Values.otel.enabled }}
   OTEL_ENABLED: "true"
   OTEL_TRACING_ENABLED: "{{ .Values.otel.tracing }}"
-  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.otel.endpoint | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.otel.endpoint | default (printf "http://otel-collector-daemonset-opentelemetry-collector.%s.svc:4318" .Release.Namespace) | quote }}
   OTEL_EXPORTER_OTLP_PROTOCOL: {{ .Values.otel.protocol | default "http/protobuf" | quote }}
   SERVICE_VERSION: {{ .Values.cdc.image.tag | quote }}
   {{- end }}
