@@ -299,7 +299,7 @@
         "authnNamespace": {
           "type": "string",
           "title": "Authn operator namespace",
-          "default": "krateo-system"
+          "default": ""
         },
         "group": {
           "type": "string",

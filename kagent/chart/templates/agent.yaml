@@ -2,7 +2,7 @@ apiVersion: kagent.dev/v1alpha2
 kind: Agent
 metadata:
   name: krateo-core-provider-agent
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
   labels:
     app.kubernetes.io/name: krateo-core-provider-agent
     app.kubernetes.io/part-of: krateo-core-provider

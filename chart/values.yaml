@@ -135,10 +135,14 @@ env:
 # installed; set enabled=false on clusters without it.
 apiRefRBAC:
   enabled: true
-  snowplowUrl: http://snowplow.krateo-system.svc.cluster.local:8081
-  authnUrl: http://authn.krateo-system.svc.cluster.local:8082
+  # snowplowUrl/authnUrl: leave "" to derive from the release namespace at render time —
+  # http://snowplow.<.Release.Namespace>.svc.cluster.local:8081 and authn.<ns>...:8082 (the chart
+  # defaults). Set either explicitly to override (e.g. a port-80 exposure).
+  snowplowUrl: ""
+  authnUrl: ""
   # Namespace where core-provider's authn allowlist mapping is created (where authn watches).
-  authnNamespace: krateo-system
+  # "" ⇒ the release namespace.
+  authnNamespace: ""
   # Group the issued identity belongs to (nominal — /rbac runs under snowplow's own SA).
   group: "krateo:core-provider"
   tokenAudience: authn

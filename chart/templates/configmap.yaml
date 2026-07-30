@@ -24,8 +24,8 @@ data:
   # apiRef RESTAction RBAC: core-provider calls snowplow's /rbac (authenticated via authn) to
   # enumerate the reads a referenced RESTAction performs and grants them to the per-composition
   # group. See braghettos/core-provider docs/design/apiref-rbac-generation.md.
-  CORE_PROVIDER_SNOWPLOW_URL: {{ .Values.apiRefRBAC.snowplowUrl | quote }}
-  CORE_PROVIDER_AUTHN_URL: {{ .Values.apiRefRBAC.authnUrl | quote }}
+  CORE_PROVIDER_SNOWPLOW_URL: {{ .Values.apiRefRBAC.snowplowUrl | default (printf "http://snowplow.%s.svc.cluster.local:8081" .Release.Namespace) | quote }}
+  CORE_PROVIDER_AUTHN_URL: {{ .Values.apiRefRBAC.authnUrl | default (printf "http://authn.%s.svc.cluster.local:8082" .Release.Namespace) | quote }}
   # Self-identity for core-provider's OWN authn allowlist mapping. core-provider provisions this
   # mapping at RUNTIME (the first time a composition declares an apiRef, when authn is up) instead
   # of a declarative CR here — the serviceaccount.authn.krateo.io CRD is installed later (as a
@@ -33,5 +33,5 @@ data:
   CORE_PROVIDER_APIREF_SELF_SA_NAME: {{ include "core-provider.serviceAccountName" . | quote }}
   CORE_PROVIDER_APIREF_SELF_SA_NAMESPACE: {{ .Release.Namespace | quote }}
   CORE_PROVIDER_APIREF_GROUP: {{ .Values.apiRefRBAC.group | quote }}
-  COMPOSITION_AUTHN_NAMESPACE: {{ .Values.apiRefRBAC.authnNamespace | quote }}
+  COMPOSITION_AUTHN_NAMESPACE: {{ .Values.apiRefRBAC.authnNamespace | default .Release.Namespace | quote }}
   {{- end }}

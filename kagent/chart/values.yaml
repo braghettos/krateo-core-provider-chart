@@ -1,4 +1,6 @@
-namespace: krateo-system
+# Namespace for this agent's Agent/ModelConfig/prompts CRs. "" ⇒ the release namespace (where the
+# agent composition is deployed); set explicitly to override.
+namespace: ""
 # ModelConfig for this agent. By default it REFERENCES a ModelConfig by name (e.g. one the
 # autopilot ships: gemini-flash / gemini-pro). Set create=true to provision a DEDICATED ModelConfig
 # for THIS agent, so it can use a different model/provider independently of the other agents.
