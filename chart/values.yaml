@@ -239,7 +239,7 @@ cdc:
     # so anything gating on Ready proceeded on a false premise. Reconcile behaviour is unchanged
     # (the ExternalObservation is the same); recovery past the grace period still rolls the stale
     # lock back and applies the change. Verified end-to-end on kind.
-    tag: 1.3.14
+    tag: 1.3.15
   replicaCount: 1
   # workers / resyncInterval: OPTIONAL fleet-wide defaults for every CDC's reconcile concurrency and
   # resync interval. Leave unset (the default) for per-Kind opt-in only, via a CompositionDefinition's
